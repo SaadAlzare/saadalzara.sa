@@ -33,7 +33,7 @@ window.PROJECTS = [
     latin: "Safahat",
     type: "desktop",
     year: 2026,
-    version: "3.3.2",
+    version: "3.3.3",
     tagline: "كل ما تحتاجه مع ملفات PDF، في برنامج عربي واحد.",
     description:
       "صفَحات برنامج مجاني لويندوز يدمج ملفات PDF ويقسّمها ويرتّب صفحاتها ويضغطها، ويحوّلها إلى Word و Excel و PowerPoint والصور وبالعكس. يعمل كله على جهازك دون إنترنت، فتبقى ملفاتك عندك.",
