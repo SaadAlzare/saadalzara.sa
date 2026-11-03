@@ -7,7 +7,7 @@
   const $ = (s, el = document) => el.querySelector(s);
 
   const TYPES = { web: "تطبيق ويب", mobile: "تطبيق جوال", desktop: "برنامج سطح مكتب", tool: "أداة" };
-  const LINKS = { download: "تحميل مجاني", page: "صفحة البرنامج", live: "جرّبه", code: "الكود المصدري" };
+  const LINKS = { download: "تحميل مجاني", portable: "النسخة المحمولة", page: "صفحة البرنامج", live: "جرّبه", code: "الكود المصدري" };
   const ar = (n) => String(n).replace(/\d/g, (d) => "٠١٢٣٤٥٦٧٨٩"[d]);
   const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const ICON_DL = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m0 0-4.5-4.5M12 15l4.5-4.5M5 19h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
@@ -36,7 +36,7 @@
             ${p.description ? `<p class="proj-desc">${esc(p.description)}</p>` : ""}
             ${p.stats?.length ? `<dl class="stats">${p.stats.map(([k, v]) => `<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join("")}</dl>` : ""}
             ${links.length ? `<div class="proj-links">${links.map(([k, u]) =>
-              `<a class="btn ${k === "download" ? "" : "btn-ghost"}" href="${esc(u)}" ${k === "download" && p.release ? `data-release="${n}"` : /^https?:/.test(u) ? 'target="_blank" rel="noopener"' : ""}>${k === "download" ? ICON_DL : ""}${LINKS[k] || esc(k)}</a>`).join("")}</div>` : ""}
+              `<a class="btn ${k === "download" ? "" : "btn-ghost"}" href="${esc(u)}" ${(k === "download" || k === "portable") && p.release ? `data-release="${n}" data-kind="${k}"` : /^https?:/.test(u) ? 'target="_blank" rel="noopener"' : ""}>${k === "download" || k === "portable" ? ICON_DL : ""}${LINKS[k] || esc(k)}</a>`).join("")}</div>` : ""}
           </div>
           ${imgs.length ? `
           <div class="shot-wrap" data-rv>
@@ -111,31 +111,34 @@
     });
   }
 
-  /* ---------- زر التحميل: آخر إصدار من GitHub ---------- */
-  // يسأل GitHub عن آخر إصدار ويضع رابط ملف التثبيت مباشرة في الزر.
-  // إن تعذّر ذلك يبقى الزر على صفحة آخر إصدار.
+  /* ---------- أزرار التحميل: آخر إصدار من GitHub ---------- */
+  // يسأل GitHub عن آخر إصدار ويضع رابط الملف مباشرة في كل زر:
+  // ملف التثبيت لزر «تحميل مجاني»، والملف المضغوط لزر «النسخة المحمولة».
+  // إن تعذّر ذلك تبقى الأزرار على صفحة آخر إصدار.
   projects.forEach(async (p, n) => {
     if (!p.release?.repo) return;
-    const btn = document.querySelector(`[data-release="${n}"]`);
-    if (!btn) return;
+    const btns = [...document.querySelectorAll(`[data-release="${n}"]`)];
+    if (!btns.length) return;
+    const fallback = (b) => { b.target = "_blank"; b.rel = "noopener"; };
     try {
       const r = await fetch(`https://api.github.com/repos/${p.release.repo}/releases/latest`, { headers: { Accept: "application/vnd.github+json" } });
       if (!r.ok) throw r.status;
       const rel = await r.json();
-      const want = (p.release.asset || "").toLowerCase();
-      const a = (rel.assets || []).find((x) => x.name.toLowerCase().includes(want)) || (rel.assets || []).find((x) => /\.exe$/i.test(x.name));
-      if (!a) throw "no asset";
-      btn.href = a.browser_download_url;
-      btn.setAttribute("download", "");
+      const assets = rel.assets || [];
+      const find = (part, re) => assets.find((x) => part && x.name.toLowerCase().includes(part.toLowerCase())) || assets.find((x) => re.test(x.name));
       const v = (rel.tag_name || "").replace(/^v/i, "");
-      if (v) {
-        const badge = btn.closest(".proj")?.querySelector(".badge");
-        if (badge) badge.textContent = "v" + v;
-        btn.setAttribute("aria-label", `${LINKS.download} — الإصدار ${v}`);
-      }
+      btns.forEach((b) => {
+        const portable = b.dataset.kind === "portable";
+        const a = portable ? find(p.release.portable, /portable.*\.zip$/i) : find(p.release.asset, /\.exe$/i);
+        if (!a) return fallback(b);
+        b.href = a.browser_download_url;
+        b.setAttribute("download", "");
+        if (v) b.setAttribute("aria-label", `${LINKS[b.dataset.kind]} — الإصدار ${v}`);
+      });
+      const badge = btns[0].closest(".proj")?.querySelector(".badge");
+      if (v && badge) badge.textContent = "v" + v;
     } catch {
-      btn.target = "_blank";
-      btn.rel = "noopener";
+      btns.forEach(fallback);
     }
   });
 
