@@ -3,10 +3,15 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>سعد — مطوّر برامج</title>
-<meta name="description" content="الموقع الشخصي لسعد: برامج للويب والجوال وسطح المكتب، صغيرة وواضحة وتؤدي عملها جيدًا.">
-<meta name="theme-color" content="#141414">
+<title>سعد الزارع — مطوّر برامج</title>
+<meta name="description" content="الموقع الشخصي لسعد الزارع: برامج عربية لسطح المكتب، منها «صفَحات» لأدوات PDF اليومية.">
+<meta name="author" content="سعد الزارع">
+<meta property="og:title" content="سعد الزارع — مطوّر برامج">
+<meta property="og:description" content="برامج عربية لسطح المكتب، منها «صفَحات» لأدوات PDF اليومية.">
+<meta property="og:locale" content="ar_SA">
+<meta name="theme-color" content="#111111">
 <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="preload" href="assets/fonts/Alexandria.ttf" as="font" type="font/ttf" crossorigin>
 <link rel="stylesheet" href="assets/style.css">
 <script>document.documentElement.classList.add('js')</script>
 </head>
@@ -21,29 +26,34 @@
 
 <a class="skip" href="#work">تخطَّ إلى البرامج</a>
 
-<header class="nav">
-  <a class="nav-mark" href="#top" aria-label="سعد — الصفحة الرئيسية">
+<header class="nav" id="nav">
+  <a class="nav-mark" href="#top" aria-label="سعد الزارع — الصفحة الرئيسية">
     <svg viewBox="0 0 1640 530" aria-hidden="true"><use href="#sig-main" class="ink"/><use href="#sig-dot" class="c1"/><use href="#sig-line" class="c2"/></svg>
   </a>
   <nav aria-label="الأقسام">
     <a href="#work">برامجي</a>
     <a href="#about" class="hide-sm">نبذة</a>
     <a href="#contact" class="hide-sm">تواصل</a>
-    <a class="btn btn-sm" href="mailto:saadx4d@gmail.com?subject=%D9%85%D8%B1%D8%AD%D8%A8%D9%8B%D8%A7%20%D8%B3%D8%B9%D8%AF">راسلني</a>
+    <a class="btn btn-sm" href="mailto:saadx4d@gmail.com">راسلني</a>
   </nav>
 </header>
 
 <main>
   <!-- ===== الواجهة ===== -->
   <section class="hero" id="top">
+    <div class="hero-glow" aria-hidden="true"></div>
     <div class="hero-top">
+      <p class="eyebrow"><span class="dot" aria-hidden="true"></span>مطوّر برامج</p>
       <h1 class="hero-title">
         <span class="mask"><span class="line l1">سعد</span></span>
-        <span class="mask"><span class="line l2">مطوّر برامج</span></span>
+        <span class="mask"><span class="line l2">الزارع</span></span>
       </h1>
       <div class="hero-side">
-        <p>أبني برامج للويب والجوال وسطح المكتب، صغيرة وواضحة وتؤدي عملها.</p>
-        <a class="btn" href="#work">شاهد برامجي</a>
+        <p>أصنع برامج عربية لسطح المكتب: أدوات هادئة تُنجز المهمة دون تعقيد، وتحترم ملفاتك وخصوصيتك.</p>
+        <div class="hero-cta">
+          <a class="btn" href="#work">شاهد برامجي</a>
+          <a class="btn btn-ghost" href="#contact">تواصل معي</a>
+        </div>
       </div>
     </div>
     <div class="sig sig-hero" aria-hidden="true">
@@ -53,88 +63,66 @@
     </div>
   </section>
 
-  <!-- ===== نبذة ===== -->
-  <section class="about" id="about">
-    <div class="about-grid" data-rv>
-      <h2 class="h-sec">نبذة</h2>
-      <p class="statement">أكتب برامج تحلّ مشكلة واحدة جيدًا. أبدأ من الحاجة، وأبني أصغر شيء يعمل، ثم أصقله حتى يصير ممتعًا في الاستخدام.</p>
-      <dl class="facts">
-        <div><dt>برامج منشورة</dt><dd><span data-count>٠</span> برامج</dd></div>
-        <div><dt>أعمل على</dt><dd>الويب، الجوال، سطح المكتب</dd></div>
-        <div><dt>أحب أن أبني</dt><dd>أدوات توفّر وقت الناس كل يوم</dd></div>
-        <div><dt>متاح لـ</dt><dd>مشاريع مستقلة وتعاون مفتوح المصدر</dd></div>
-      </dl>
-    </div>
-  </section>
-
-  <!-- ===== ما أصنعه ===== -->
-  <section class="make" id="make" aria-labelledby="make-h">
-    <h2 class="h-sec" id="make-h" data-rv><span>ما أصنعه</span></h2>
-    <ul class="poster" data-rv>
-      <li><span class="p-word">تطبيقات ويب</span><span class="p-fact">React · Node.js</span></li>
-      <li><span class="p-word">تطبيقات جوال</span><span class="p-fact">Flutter · React Native</span></li>
-      <li><span class="p-word">سطح المكتب</span><span class="p-fact">Python · Electron</span></li>
-      <li><span class="p-word">أدوات وأتمتة</span><span class="p-fact">Go · Python</span></li>
-    </ul>
-  </section>
-
   <!-- ===== برامجي ===== -->
   <section class="work" id="work" aria-labelledby="work-h">
-    <div class="work-head" data-rv>
-      <h2 class="h-sec" id="work-h">برامجي</h2>
-      <div class="filters" role="group" aria-label="تصفية البرامج حسب النوع" id="filters"></div>
-    </div>
-
-    <div class="index" id="index">
-      <div class="stage" aria-hidden="true">
-        <p class="fact fact-type" id="factType"></p>
-        <div class="frame" id="frame"></div>
-        <p class="fact fact-year" id="factYear"></p>
+    <div class="wrap">
+      <div class="sec-head" data-rv>
+        <p class="kicker">برامجي</p>
+        <h2 class="h-sec" id="work-h">ما بنيته حتى الآن</h2>
       </div>
-      <ol class="names" id="names"></ol>
-      <noscript><p class="noscript">فعّل JavaScript لعرض قائمة البرامج.</p></noscript>
+      <div id="projects"></div>
+      <noscript><p class="noscript">فعّل JavaScript لعرض البرامج.</p></noscript>
+      <div class="next" data-rv>
+        <span class="next-plus" aria-hidden="true">+</span>
+        <p><b>البرنامج القادم</b> قيد البناء. ستجده هنا حين يجهز.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== نبذة ===== -->
+  <section class="about" id="about">
+    <div class="wrap about-grid" data-rv>
+      <p class="kicker">نبذة</p>
+      <p class="statement">أبدأ من مشكلة حقيقية، أبني أبسط حل يعمل، ثم أصقله حتى يصير <mark>ممتعًا في الاستخدام</mark>. العربية عندي لغة أولى في الواجهة، لا ترجمة لاحقة.</p>
+      <dl class="facts">
+        <div><dt>برامج منشورة</dt><dd><span data-count>٠</span></dd></div>
+        <div><dt>أبني لـ</dt><dd>Windows</dd></div>
+        <div><dt>أهتم بـ</dt><dd>الخصوصية والعمل دون إنترنت</dd></div>
+      </dl>
     </div>
   </section>
 
   <!-- ===== تواصل ===== -->
   <section class="contact" id="contact" aria-labelledby="contact-h">
-    <h2 class="h-sec" id="contact-h" data-rv><span>تواصل</span></h2>
-    <ul class="rows" data-rv>
-      <li class="row">
-        <a class="row-main" href="mailto:saadx4d@gmail.com" dir="ltr">saadx4d@gmail.com</a>
-        <span class="row-side">
+    <div class="wrap">
+      <div class="sec-head" data-rv>
+        <p class="kicker">تواصل</p>
+        <h2 class="h-sec" id="contact-h">عندك فكرة أو ملاحظة؟</h2>
+      </div>
+      <ul class="rows" data-rv>
+        <li class="row">
+          <span class="row-label">البريد</span>
+          <a class="row-main" href="mailto:saadx4d@gmail.com" dir="ltr">saadx4d@gmail.com</a>
           <button class="copy" type="button" data-copy="saadx4d@gmail.com">انسخ</button>
-        </span>
-      </li>
-      <li class="row"><a class="row-main" href="https://github.com/" dir="ltr">github.com/saad</a></li>
-      <li class="row"><a class="row-main" href="https://x.com/" dir="ltr">x.com/saad</a></li>
-      <li class="row"><a class="row-main" href="https://www.linkedin.com/" dir="ltr">linkedin.com/in/saad</a></li>
-      <li class="row row-hello">
-        <span class="row-main">أهلًا بك</span>
-        <a class="round" href="mailto:saadx4d@gmail.com?subject=%D9%85%D8%B1%D8%AD%D8%A8%D9%8B%D8%A7%20%D8%B3%D8%B9%D8%AF" aria-label="أرسل رسالة">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5m6-6-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </a>
-      </li>
-    </ul>
+        </li>
+        <li class="row">
+          <span class="row-label">GitHub</span>
+          <a class="row-main" href="https://github.com/SaadAlzare" target="_blank" rel="noopener" dir="ltr">github.com/SaadAlzare</a>
+          <span class="row-arrow" aria-hidden="true">↖</span>
+        </li>
+      </ul>
+    </div>
   </section>
 </main>
 
 <!-- ===== الخاتمة ===== -->
 <footer class="foot">
-  <div class="foot-top" data-rv>
-    <div class="foot-invite">
-      <h2>عندك فكرة برنامج؟<br>لنبنِها معًا.</h2>
-      <a class="btn" href="mailto:saadx4d@gmail.com?subject=%D9%81%D9%83%D8%B1%D8%A9%20%D8%A8%D8%B1%D9%86%D8%A7%D9%85%D8%AC">احكِ لي عنها</a>
-    </div>
-    <ul class="foot-links">
-      <li><a href="#work">برامجي</a></li>
-      <li><a href="#about">نبذة</a></li>
-      <li><a href="https://github.com/">GitHub</a></li>
-      <li><a href="mailto:saadx4d@gmail.com">البريد</a></li>
-    </ul>
+  <div class="wrap foot-top" data-rv>
+    <h2>لنبنِ شيئًا مفيدًا.</h2>
+    <a class="btn" href="mailto:saadx4d@gmail.com">احكِ لي عن فكرتك</a>
   </div>
-  <div class="foot-legal">
-    <span>© <span id="yr">٢٠٢٦</span> سعد</span>
+  <div class="wrap foot-legal">
+    <span>© <span id="yr">٢٠٢٦</span> سعد الزارع</span>
     <a href="#top">إلى الأعلى ↑</a>
   </div>
   <div class="sig sig-foot" aria-hidden="true">
@@ -143,30 +131,6 @@
     <svg class="layer layer-line" viewBox="0 0 1640 530"><use href="#sig-line"/></svg>
   </div>
 </footer>
-
-<!-- نافذة تفاصيل المشروع -->
-<dialog class="pd" id="pd" aria-labelledby="pdName">
-  <div class="pd-inner">
-    <div class="pd-media" id="pdMedia"></div>
-    <div class="pd-body">
-      <div class="pd-top">
-        <p class="pd-meta" id="pdMeta"></p>
-        <button class="pd-close" type="button" id="pdClose" aria-label="إغلاق">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
-        </button>
-      </div>
-      <h3 id="pdName"></h3>
-      <p class="pd-sum" id="pdSum"></p>
-      <p class="pd-desc" id="pdDesc"></p>
-      <p class="pd-tech" id="pdTech"></p>
-      <div class="pd-links" id="pdLinks"></div>
-      <div class="pd-nav">
-        <button type="button" id="pdPrev">→ السابق</button>
-        <button type="button" id="pdNext">التالي ←</button>
-      </div>
-    </div>
-  </div>
-</dialog>
 
 <script src="projects.js"></script>
 <script src="assets/main.js"></script>

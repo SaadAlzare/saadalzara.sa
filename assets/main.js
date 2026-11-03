@@ -2,13 +2,114 @@
 (() => {
   const root = document.documentElement;
   const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const fine = matchMedia("(hover: hover) and (pointer: fine)").matches;
   const projects = Array.isArray(window.PROJECTS) ? window.PROJECTS : [];
   const $ = (s, el = document) => el.querySelector(s);
 
-  const TYPES = { web: "ويب", mobile: "جوال", desktop: "سطح المكتب", tool: "أداة" };
-  const LINKS = { live: "جرّبه", code: "الكود المصدري", download: "تحميل" };
+  const TYPES = { web: "تطبيق ويب", mobile: "تطبيق جوال", desktop: "برنامج سطح مكتب", tool: "أداة" };
+  const LINKS = { download: "تحميل مجاني", page: "صفحة البرنامج", live: "جرّبه", code: "الكود المصدري" };
   const ar = (n) => String(n).replace(/\d/g, (d) => "٠١٢٣٤٥٦٧٨٩"[d]);
   const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const ICON_DL = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m0 0-4.5-4.5M12 15l4.5-4.5M5 19h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  const ICON_SUN = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 2.5v2m0 15v2m9.5-9.5h-2m-15 0h-2m15.2-6.7-1.4 1.4M6.7 17.3l-1.4 1.4m0-13.4 1.4 1.4m10.6 10.6 1.4 1.4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
+  const ICON_MOON = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>';
+
+  /* ---------- البرامج ---------- */
+  const list = $("#projects");
+  if (list) {
+    list.innerHTML = projects.map((p, n) => {
+      const imgs = p.images || [];
+      const links = Object.entries(p.links || {}).filter(([, u]) => u);
+      const meta = [TYPES[p.type] || p.type, p.year && ar(p.year)].filter(Boolean);
+      return `
+      <article class="proj" style="--accent:${esc(p.accent || "#0784f2")}" aria-labelledby="p${n}">
+        <div class="proj-grid">
+          <div class="proj-info" data-rv>
+            <div class="proj-id">
+              ${p.icon ? `<img class="proj-icon" src="${esc(p.icon)}" alt="" width="72" height="72">` : ""}
+              <div>
+                <h3 class="proj-name" id="p${n}">${esc(p.name)}</h3>
+                <p class="proj-meta">${p.version ? `<span class="badge" dir="ltr">v${esc(p.version)}</span>` : ""}${meta.map((m) => `<span>${esc(m)}</span>`).join("")}${p.latin ? `<span dir="ltr">${esc(p.latin)}</span>` : ""}</p>
+              </div>
+            </div>
+            ${p.tagline ? `<p class="proj-tag">${esc(p.tagline)}</p>` : ""}
+            ${p.description ? `<p class="proj-desc">${esc(p.description)}</p>` : ""}
+            ${p.stats?.length ? `<dl class="stats">${p.stats.map(([k, v]) => `<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join("")}</dl>` : ""}
+            ${links.length ? `<div class="proj-links">${links.map(([k, u]) =>
+              `<a class="btn ${k === "download" ? "" : "btn-ghost"}" href="${esc(u)}" ${/^https?:/.test(u) ? 'target="_blank" rel="noopener"' : ""}>${k === "download" ? ICON_DL : ""}${LINKS[k] || esc(k)}</a>`).join("")}</div>` : ""}
+          </div>
+          ${imgs.length ? `
+          <div class="shot-wrap" data-rv>
+            <div class="window">
+              <div class="window-bar" aria-hidden="true"><i></i><i></i><i></i><b>${esc(p.latin || p.name)}</b></div>
+              <div class="screens">
+                ${imgs.map((im, i) => `<img class="${i === 0 ? "on" : ""}" src="${esc(im.src)}" alt="لقطة من ${esc(p.name)}${im.label ? ` — المظهر ${esc(im.label)}` : ""}" width="1346" height="862" ${i ? 'loading="lazy"' : ""} decoding="async">`).join("")}
+              </div>
+            </div>
+            ${imgs.length > 1 ? `
+            <div class="switch" role="group" aria-label="بدّل لقطة الشاشة">
+              <span class="pill" aria-hidden="true"></span>
+              ${imgs.map((im, i) => `<button type="button" data-shot="${i}" aria-pressed="${i === 0}">${/داكن/.test(im.label) ? ICON_MOON : /فاتح/.test(im.label) ? ICON_SUN : ""}${esc(im.label || ar(i + 1))}</button>`).join("")}
+            </div>` : ""}
+          </div>` : ""}
+        </div>
+        ${p.tools?.length ? `
+        <div class="tools" data-rv>
+          <div class="tools-head">
+            <h4>ماذا يفعل ${esc(p.name)}؟</h4>
+            <p>${ar(p.tools.reduce((s, g) => s + g.items.length, 0))} أداة في مساحة عمل واحدة</p>
+          </div>
+          <div class="tool-groups">
+            ${p.tools.map((g) => `<div class="tg"><h5>${esc(g.group)}</h5><ul>${g.items.map(([t, c]) => `<li class="tool" style="--c:${esc(c)}">${esc(t)}</li>`).join("")}</ul></div>`).join("")}
+          </div>
+          ${p.tech?.length ? `<p class="tech">${p.tech.map((t) => `<span>${esc(t)}</span>`).join("")}</p>` : ""}
+        </div>` : ""}
+      </article>`;
+    }).join("");
+
+    // مبدّل لقطات الشاشة
+    list.querySelectorAll(".shot-wrap").forEach((wrap) => {
+      const sw = $(".switch", wrap);
+      const imgs = [...wrap.querySelectorAll(".screens img")];
+      if (sw) {
+        const pill = $(".pill", sw);
+        const btns = [...sw.querySelectorAll("button")];
+        const place = (b) => {
+          pill.style.width = b.offsetWidth + "px";
+          pill.style.insetInlineStart = (sw.offsetWidth - b.offsetLeft - b.offsetWidth) + "px";
+        };
+        const pick = (i) => {
+          btns.forEach((b, j) => b.setAttribute("aria-pressed", i === j));
+          imgs.forEach((im, j) => im.classList.toggle("on", i === j));
+          place(btns[i]);
+        };
+        btns.forEach((b, i) => b.addEventListener("click", () => { pick(i); clearInterval(auto); }));
+        const ready = () => place(btns.find((b) => b.getAttribute("aria-pressed") === "true"));
+        document.fonts?.ready.then(ready); ready(); addEventListener("resize", ready);
+        // تبديل تلقائي هادئ حتى يتفاعل الزائر
+        let k = 0, auto = 0;
+        if (!reduce && btns.length > 1) {
+          new IntersectionObserver((es, o) => {
+            if (!es[0].isIntersecting) return; o.disconnect();
+            auto = setInterval(() => { k = (k + 1) % btns.length; pick(k); }, 4200);
+          }, { threshold: 0.5 }).observe(wrap);
+        }
+      }
+      // ميلان خفيف مع المؤشر
+      const win = $(".window", wrap);
+      if (fine && !reduce && win) {
+        wrap.addEventListener("pointermove", (e) => {
+          const r = win.getBoundingClientRect();
+          const x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
+          win.style.setProperty("--ry", `${(x - 0.5) * 7}deg`);
+          win.style.setProperty("--rx", `${(0.5 - y) * 5}deg`);
+          win.style.setProperty("--gx", `${x * 100}%`);
+          win.style.setProperty("--gy", `${y * 100}%`);
+        });
+        wrap.addEventListener("pointerleave", () => { win.style.setProperty("--ry", "0deg"); win.style.setProperty("--rx", "0deg"); });
+      }
+    });
+  }
 
   /* ---------- الواجهة: الاسم ثم التوقيع ---------- */
   requestAnimationFrame(() => requestAnimationFrame(() => {
@@ -16,20 +117,30 @@
     $(".sig-hero")?.classList.add("drawn");
   }));
 
-  // التوقيع في الواجهة يتحرك ببطء مع التمرير
+  /* ---------- الشريط العلوي والتمرير ---------- */
+  const nav = $("#nav");
   const heroSig = $(".sig-hero");
-  if (heroSig && !reduce) {
-    let ticking = false;
-    addEventListener("scroll", () => {
-      if (ticking) return;
-      ticking = true;
-      requestAnimationFrame(() => {
-        const y = Math.min(scrollY, innerHeight);
-        heroSig.style.transform = `translate3d(0, ${y * 0.18}px, 0) scale(${1 + y * 0.00012})`;
-        ticking = false;
-      });
-    }, { passive: true });
-  }
+  let lastY = scrollY, ticking = false;
+  const onScroll = () => {
+    const y = scrollY;
+    nav?.classList.toggle("solid", y > 40);
+    nav?.classList.toggle("hide", y > innerHeight && y > lastY + 4);
+    if (y < lastY - 4) nav?.classList.remove("hide");
+    lastY = y;
+    if (heroSig && !reduce && y < innerHeight * 1.2) {
+      heroSig.style.transform = `translate3d(0, ${y * 0.18}px, 0) scale(${1 + y * 0.00012})`;
+    }
+    ticking = false;
+  };
+  addEventListener("scroll", () => { if (!ticking) { ticking = true; requestAnimationFrame(onScroll); } }, { passive: true });
+  onScroll();
+
+  // تمييز رابط القسم الحالي
+  const navLinks = [...document.querySelectorAll('.nav nav a[href^="#"]')];
+  const secObs = new IntersectionObserver((es) => es.forEach((e) => {
+    if (e.isIntersecting) navLinks.forEach((a) => a.classList.toggle("on", a.getAttribute("href") === "#" + e.target.id));
+  }), { rootMargin: "-45% 0px -50% 0px" });
+  ["work", "about", "contact"].forEach((id) => { const s = document.getElementById(id); if (s) secObs.observe(s); });
 
   /* ---------- ظهور الأقسام ---------- */
   const rvObserver = new IntersectionObserver((entries) => {
@@ -38,7 +149,7 @@
       e.target.classList.add("in");
       rvObserver.unobserve(e.target);
     });
-  }, { rootMargin: "0px 0px -12% 0px" });
+  }, { rootMargin: "0px 0px -10% 0px" });
   document.querySelectorAll("[data-rv]").forEach((el) => {
     [...el.children].forEach((c, i) => c.style.setProperty("--i", i));
     rvObserver.observe(el);
@@ -50,173 +161,11 @@
     }, { threshold: 0.3 }).observe(footSig);
   }
 
-  /* ---------- عدد البرامج في النبذة ---------- */
+  /* ---------- عدد البرامج ---------- */
   const countEl = $("[data-count]");
   if (countEl) {
-    const total = projects.length;
-    countEl.textContent = ar(total);
-    if (!reduce && total > 1) {
-      new IntersectionObserver((es, o) => {
-        if (!es[0].isIntersecting) return;
-        o.disconnect();
-        let n = 0;
-        const t = setInterval(() => { n++; countEl.textContent = ar(n); if (n >= total) clearInterval(t); }, 90);
-      }, { threshold: 1 }).observe(countEl);
-    }
-  }
-
-  /* ---------- برامجي ---------- */
-  const namesEl = $("#names");
-  const frame = $("#frame");
-  const factType = $("#factType");
-  const factYear = $("#factYear");
-  const filtersEl = $("#filters");
-  let filter = "all";
-  let shown = [];
-  let current = -1;
-
-  const coverHTML = (p, i) => {
-    if (p.image) return `<img class="shot" src="${esc(p.image)}" alt="" loading="lazy" decoding="async" width="1200" height="1200">`;
-    const tone = ["", "alt", "alt2"][i % 3];
-    return `<div class="shot gen-cover ${tone}"><svg viewBox="0 0 1640 530"><use href="#sig-main"/></svg><b>${esc(p.name)}</b></div>`;
-  };
-
-  // نجهّز كل الصور مرة واحدة داخل الإطار، ونبدّل بينها
-  if (frame) frame.innerHTML = projects.map(coverHTML).join("");
-  const shots = frame ? [...frame.children] : [];
-
-  function setCurrent(idx) {
-    if (idx === current || idx < 0) return;
-    current = idx;
-    const p = projects[idx];
-    shots.forEach((s, i) => s.classList.toggle("on", i === idx));
-    namesEl.querySelectorAll(".pname").forEach((b) => b.classList.toggle("cur", +b.dataset.i === idx));
-    [factType, factYear].forEach((f) => f.classList.add("swap"));
-    setTimeout(() => {
-      factType.textContent = `${TYPES[p.type] || p.type || ""}`;
-      factYear.textContent = p.year ? ar(p.year) : "";
-      [factType, factYear].forEach((f) => f.classList.remove("swap"));
-    }, 160);
-  }
-
-  function renderFilters() {
-    const counts = projects.reduce((m, p) => ((m[p.type] = (m[p.type] || 0) + 1), m), {});
-    const keys = Object.keys(TYPES).filter((k) => counts[k]);
-    if (keys.length < 2) { filtersEl.hidden = true; return; }
-    const chips = [["all", "الكل", projects.length], ...keys.map((k) => [k, TYPES[k], counts[k]])];
-    filtersEl.innerHTML = chips.map(([k, label, n]) =>
-      `<button class="chip" type="button" data-f="${k}" aria-pressed="${k === filter}">${label}<span>${ar(n)}</span></button>`).join("");
-  }
-
-  function renderNames(animate) {
-    shown = projects.map((p, i) => ({ p, i })).filter(({ p }) => filter === "all" || p.type === filter);
-    namesEl.classList.toggle("many", shown.length > 9);
-    namesEl.innerHTML = shown.map(({ p, i }) =>
-      `<li><button class="pname" type="button" data-i="${i}" aria-haspopup="dialog">${esc(p.name)}</button></li>`).join("");
-    if (animate && !reduce) {
-      namesEl.classList.remove("fade"); void namesEl.offsetWidth; namesEl.classList.add("fade");
-    }
-    current = -1;
-    if (shown.length) setCurrent(shown[0].i);
-    track();
-  }
-
-  // الاسم الأقرب لمنتصف الشاشة هو الحالي
-  function track() {
-    const btns = namesEl.querySelectorAll(".pname");
-    if (!btns.length) return;
-    const mid = innerHeight / 2;
-    let best = null, bestD = Infinity;
-    btns.forEach((b) => {
-      const r = b.getBoundingClientRect();
-      const d = Math.abs(r.top + r.height / 2 - mid);
-      if (d < bestD) { bestD = d; best = b; }
-    });
-    if (best) setCurrent(+best.dataset.i);
-  }
-  let tTick = false;
-  addEventListener("scroll", () => {
-    if (tTick) return;
-    tTick = true;
-    requestAnimationFrame(() => { track(); tTick = false; });
-  }, { passive: true });
-  addEventListener("resize", track);
-
-  if (namesEl) {
-    renderFilters();
-    renderNames(false);
-    namesEl.addEventListener("pointerover", (e) => {
-      const b = e.target.closest(".pname");
-      if (b && matchMedia("(hover: hover)").matches) setCurrent(+b.dataset.i);
-    });
-    namesEl.addEventListener("focusin", (e) => {
-      const b = e.target.closest(".pname");
-      if (b) setCurrent(+b.dataset.i);
-    });
-    namesEl.addEventListener("click", (e) => {
-      const b = e.target.closest(".pname");
-      if (b) openProject(+b.dataset.i, b);
-    });
-    filtersEl.addEventListener("click", (e) => {
-      const c = e.target.closest(".chip");
-      if (!c || c.dataset.f === filter) return;
-      filter = c.dataset.f;
-      filtersEl.querySelectorAll(".chip").forEach((x) => x.setAttribute("aria-pressed", x === c));
-      renderNames(true);
-      const idx = $("#index");
-      const top = idx.getBoundingClientRect().top + scrollY - innerHeight * 0.1;
-      if (scrollY > top + 40) scrollTo({ top, behavior: reduce ? "auto" : "smooth" });
-    });
-  }
-
-  /* ---------- نافذة التفاصيل ---------- */
-  const dlg = $("#pd");
-  let openIdx = -1, opener = null;
-
-  function fillDialog(i) {
-    const p = projects[i];
-    openIdx = i;
-    $("#pdMedia").innerHTML = p.image
-      ? `<img src="${esc(p.image)}" alt="لقطة من ${esc(p.name)}" width="1200" height="1200">`
-      : coverHTML(p, i).replace('class="shot ', 'class="');
-    $("#pdMeta").textContent = [TYPES[p.type] || p.type, p.year && ar(p.year)].filter(Boolean).join(" · ");
-    $("#pdName").textContent = p.name;
-    $("#pdSum").textContent = p.summary || "";
-    $("#pdDesc").textContent = p.description || "";
-    $("#pdTech").textContent = (p.tech || []).join(" · ");
-    const links = Object.entries(p.links || {}).filter(([, url]) => url);
-    $("#pdLinks").innerHTML = links.map(([k, url], n) =>
-      `<a class="${n === 0 ? "btn" : ""}" href="${esc(url)}" ${/^https?:/.test(url) ? 'target="_blank" rel="noopener"' : ""}>${LINKS[k] || esc(k)}</a>`).join("");
-    const list = shown.map((s) => s.i);
-    const pos = list.indexOf(i);
-    $("#pdPrev").hidden = list.length < 2;
-    $("#pdNext").hidden = list.length < 2;
-    $("#pdPrev").dataset.to = list[(pos - 1 + list.length) % list.length];
-    $("#pdNext").dataset.to = list[(pos + 1) % list.length];
-  }
-
-  function openProject(i, from) {
-    if (!dlg) return;
-    opener = from || null;
-    fillDialog(i);
-    if (typeof dlg.showModal === "function") dlg.showModal(); else dlg.setAttribute("open", "");
-    $("#pdClose").focus();
-  }
-  function closeDialog() {
-    if (typeof dlg.close === "function") dlg.close(); else dlg.removeAttribute("open");
-  }
-  if (dlg) {
-    dlg.addEventListener("close", () => {
-      const b = namesEl.querySelector(`.pname[data-i="${openIdx}"]`) || opener;
-      b?.focus({ preventScroll: true });
-    });
-    $("#pdClose").addEventListener("click", closeDialog);
-    dlg.addEventListener("click", (e) => { if (e.target === dlg) closeDialog(); });
-    ["#pdPrev", "#pdNext"].forEach((s) => $(s).addEventListener("click", (e) => fillDialog(+e.currentTarget.dataset.to)));
-    dlg.addEventListener("keydown", (e) => {
-      if (e.key === "ArrowLeft") fillDialog(+$("#pdNext").dataset.to);
-      if (e.key === "ArrowRight") fillDialog(+$("#pdPrev").dataset.to);
-    });
+    const n = projects.length;
+    countEl.textContent = n === 1 ? "برنامج واحد" : n === 2 ? "برنامجان" : n <= 10 ? `${ar(n)} برامج` : `${ar(n)} برنامجًا`;
   }
 
   /* ---------- نسخ البريد ---------- */
@@ -228,7 +177,7 @@
         const t = Object.assign(document.createElement("textarea"), { value: text });
         document.body.append(t); t.select(); document.execCommand("copy"); t.remove();
       }
-      btn.textContent = "نُسخ";
+      btn.textContent = "نُسخ ✓";
       btn.classList.add("done");
       setTimeout(() => { btn.textContent = "انسخ"; btn.classList.remove("done"); }, 1800);
     });

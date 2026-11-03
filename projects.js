@@ -1,89 +1,61 @@
 /* =========================================================
    برامجي — أضف مشاريعك هنا
    ---------------------------------------------------------
-   لإضافة مشروع جديد: انسخ أي كتلة { ... } والصقها في أول
-   القائمة (المشروع الأول يظهر أولًا)، ثم عدّل قيمها.
+   كل مشروع كتلة { ... } في القائمة. المشروع الأول يظهر أولًا.
+   لإضافة مشروع جديد انسخ الكتلة الموجودة وعدّل قيمها،
+   والحقول التي لا تحتاجها احذفها.
 
-   الحقول:
-   name        اسم البرنامج (قصير، كلمة أو كلمتان)
-   type        نوعه: "web" | "mobile" | "desktop" | "tool"
-   year        سنة الإطلاق
-   summary     سطر واحد يصف البرنامج
-   description فقرة أطول تظهر عند فتح المشروع
-   tech        التقنيات المستخدمة
-   image       صورة الشاشة (مربعة يفضّل 1200×1200) داخل
-               مجلد assets/projects — اتركها "" إن لم تتوفر
-               وسيُصنع غلاف تلقائي بألوان الشعار
-   links       روابط اختيارية: live (رابط التجربة)،
-               code (المستودع)، download (رابط التحميل)
-               احذف أي رابط لا تحتاجه أو اتركه ""
+   name         اسم البرنامج
+   latin        اسمه بالإنجليزية (اختياري)
+   type         نوعه: "web" | "mobile" | "desktop" | "tool"
+   year         سنة الإطلاق
+   version      رقم آخر إصدار (اختياري)
+   tagline      جملة قصيرة تعرّف البرنامج
+   description  فقرة تشرح ما يفعله
+   icon         أيقونة البرنامج داخل assets/projects
+   accent       لون البرنامج الأساسي (اختياري)
+   images       لقطات الشاشة: [{ src, label }] — إن كانت أكثر من
+                واحدة يظهر زر للتبديل بينها
+   stats        حقائق قصيرة: [["العنوان", "القيمة"], ...]
+   tools        مجموعات الأدوات (اختياري): [{ group, items: [[الاسم, اللون]] }]
+   tech         التقنيات المستخدمة
+   links        download (رابط التحميل) | page (صفحة المشروع)
+                | code (المستودع) | live (رابط التجربة)
    ========================================================= */
 
 window.PROJECTS = [
   {
-    name: "دفتر",
-    type: "web",
-    year: 2026,
-    summary: "ملاحظات بصيغة Markdown تتزامن بين أجهزتك.",
-    description:
-      "تطبيق ويب لتدوين الأفكار بسرعة. يحفظ كل شيء على جهازك أولًا ثم يزامنه، ويعمل دون اتصال، ويبحث في مئات الملاحظات فورًا.",
-    tech: ["React", "IndexedDB", "Service Worker"],
-    image: "assets/projects/daftar.jpg",
-    links: { live: "#", code: "#" }
-  },
-  {
-    name: "ميزان",
-    type: "mobile",
-    year: 2025,
-    summary: "تطبيق جوال يتابع مصاريفك الشهرية بفئات واضحة.",
-    description:
-      "تسجّل المصروف في ثانيتين، ويعرض لك أين ذهب مالك هذا الشهر مقارنة بالشهر الماضي، مع تنبيه حين تقترب من حد الفئة.",
-    tech: ["Flutter", "SQLite"],
-    image: "assets/projects/mizan.jpg",
-    links: { download: "#" }
-  },
-  {
-    name: "نبض",
-    type: "mobile",
-    year: 2025,
-    summary: "متتبّع عادات يومي يعرض تقدّمك في شبكة واحدة.",
-    description:
-      "تحدد عاداتك اليومية وتعلّمها بلمسة. الشبكة تعرض آخر خمسة أسابيع، فترى الاستمرار والانقطاع بنظرة.",
-    tech: ["React Native", "Expo"],
-    image: "assets/projects/nabd.jpg",
-    links: { download: "#", code: "#" }
-  },
-  {
-    name: "مرتّب",
+    name: "صفَحات",
+    latin: "Safahat",
     type: "desktop",
-    year: 2024,
-    summary: "برنامج سطح مكتب يرتّب مجلد التنزيلات تلقائيًا.",
+    year: 2026,
+    version: "3.3.2",
+    tagline: "أدوات PDF اليومية، بواجهة عربية هادئة.",
     description:
-      "يراقب مجلد التنزيلات وينقل كل ملف إلى مكانه حسب نوعه وتاريخه، بقواعد تكتبها أنت، مع سجلّ يتيح التراجع عن أي نقل.",
-    tech: ["Python", "PySide6"],
-    image: "assets/projects/murattib.jpg",
-    links: { download: "#", code: "#" }
-  },
-  {
-    name: "رادار",
-    type: "web",
-    year: 2024,
-    summary: "لوحة تراقب مواقعك وتنبّهك عند أي توقف.",
-    description:
-      "تفحص الخدمات كل دقيقة، وتسجّل زمن الاستجابة، وترسل تنبيهًا فوريًا عند التوقف، مع صفحة حالة عامة لعملائك.",
-    tech: ["Node.js", "PostgreSQL", "Chart.js"],
-    image: "assets/projects/radar.jpg",
-    links: { live: "#" }
-  },
-  {
-    name: "ناقل",
-    type: "tool",
-    year: 2023,
-    summary: "أداة سطر أوامر للنسخ الاحتياطي المجدول.",
-    description:
-      "تأخذ نسخة مضغوطة من مجلداتك إلى قرص خارجي أو سحابة كل ليلة، وتحتفظ بعدد النسخ الذي تحدده وتحذف الأقدم.",
-    tech: ["Go"],
-    image: "assets/projects/naqil.jpg",
-    links: { code: "#" }
+      "ادمج ملفاتك، قسّم الصفحات، غيّر ترتيبها، وحوّل بين PDF و Word و Excel و PowerPoint والصور. كل المعالجة على جهازك دون إنترنت، وتُحفظ النتائج في المكان الذي تختاره، مع معاينة واضحة لكل صفحة.",
+    icon: "assets/projects/safahat-mark.svg",
+    accent: "#1668E8",
+    images: [
+      { src: "assets/projects/safahat-light.webp", label: "فاتح" },
+      { src: "assets/projects/safahat-dark.webp", label: "داكن" }
+    ],
+    stats: [
+      ["الخصوصية", "يعمل دون إنترنت"],
+      ["النظام", "Windows 7 حتى 11"],
+      ["المعالج", "32 و 64 بت، و ARM"],
+      ["اللغة", "عربي وإنجليزي"]
+    ],
+    tools: [
+      { group: "تنظيم الصفحات", items: [["دمج", "#E0457B"], ["تقسيم", "#5B4BDB"], ["ترتيب", "#1668E8"]] },
+      { group: "Word", items: [["PDF إلى Word", "#0E8A5F"], ["Word إلى PDF", "#B7860B"]] },
+      { group: "Excel", items: [["PDF إلى Excel", "#2F8F5B"], ["Excel إلى PDF", "#5E8F1F"]] },
+      { group: "PowerPoint", items: [["PDF إلى PowerPoint", "#C2417A"], ["PowerPoint إلى PDF", "#A4552B"]] },
+      { group: "الصور", items: [["PDF إلى صور", "#0E9AA7"], ["الصور إلى PDF", "#D2457F"]] },
+      { group: "صيانة", items: [["ضغط", "#3A6FD8"], ["إصلاح الملفات التالفة", "#0AA5C8"]] }
+    ],
+    tech: ["C#", "WPF", "PDFium", "Tesseract OCR", "qpdf"],
+    links: {
+      download: "https://github.com/SaadAlzare/safahat-releases/releases/latest"
+    }
   }
 ];
