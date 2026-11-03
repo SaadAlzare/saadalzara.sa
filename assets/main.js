@@ -171,7 +171,7 @@
   const secObs = new IntersectionObserver((es) => es.forEach((e) => {
     if (e.isIntersecting) navLinks.forEach((a) => a.classList.toggle("on", a.getAttribute("href") === "#" + e.target.id));
   }), { rootMargin: "-45% 0px -50% 0px" });
-  ["work", "about"].forEach((id) => { const s = document.getElementById(id); if (s) secObs.observe(s); });
+  ["work", "about", "contact"].forEach((id) => { const s = document.getElementById(id); if (s) secObs.observe(s); });
 
   /* ---------- ظهور الأقسام ---------- */
   const rvObserver = new IntersectionObserver((entries) => {
