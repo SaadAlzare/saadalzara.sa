@@ -437,7 +437,7 @@ a.row-main:hover { color: var(--cyan); }
   .facts { grid-template-columns: 1fr; }
   .row { grid-template-columns: minmax(0, 1fr) auto; gap: 6px 14px; }
   .row-label { grid-column: 1 / -1; }
-  .row-main { font-size: 5.6vw; }
+  .row-main { font-size: 4.8vw; white-space: nowrap; }
   .stats { grid-template-columns: 1fr; }
   .foot-top .btn { width: 100%; }
   .sig-foot { width: 150%; margin-inline: -25%; margin-bottom: -14%; }
