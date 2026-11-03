@@ -36,7 +36,7 @@
             ${p.description ? `<p class="proj-desc">${esc(p.description)}</p>` : ""}
             ${p.stats?.length ? `<dl class="stats">${p.stats.map(([k, v]) => `<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join("")}</dl>` : ""}
             ${links.length ? `<div class="proj-links">${links.map(([k, u]) =>
-              `<a class="btn ${k === "download" ? "" : "btn-ghost"}" href="${esc(u)}" ${/^https?:/.test(u) ? 'target="_blank" rel="noopener"' : ""}>${k === "download" ? ICON_DL : ""}${LINKS[k] || esc(k)}</a>`).join("")}</div>` : ""}
+              `<a class="btn ${k === "download" ? "" : "btn-ghost"}" href="${esc(u)}" ${k === "download" && p.release ? `data-release="${n}"` : /^https?:/.test(u) ? 'target="_blank" rel="noopener"' : ""}>${k === "download" ? ICON_DL : ""}${LINKS[k] || esc(k)}</a>`).join("")}</div>` : ""}
           </div>
           ${imgs.length ? `
           <div class="shot-wrap" data-rv>
@@ -111,6 +111,34 @@
     });
   }
 
+  /* ---------- زر التحميل: آخر إصدار من GitHub ---------- */
+  // يسأل GitHub عن آخر إصدار ويضع رابط ملف التثبيت مباشرة في الزر.
+  // إن تعذّر ذلك يبقى الزر على صفحة آخر إصدار.
+  projects.forEach(async (p, n) => {
+    if (!p.release?.repo) return;
+    const btn = document.querySelector(`[data-release="${n}"]`);
+    if (!btn) return;
+    try {
+      const r = await fetch(`https://api.github.com/repos/${p.release.repo}/releases/latest`, { headers: { Accept: "application/vnd.github+json" } });
+      if (!r.ok) throw r.status;
+      const rel = await r.json();
+      const want = (p.release.asset || "").toLowerCase();
+      const a = (rel.assets || []).find((x) => x.name.toLowerCase().includes(want)) || (rel.assets || []).find((x) => /\.exe$/i.test(x.name));
+      if (!a) throw "no asset";
+      btn.href = a.browser_download_url;
+      btn.setAttribute("download", "");
+      const v = (rel.tag_name || "").replace(/^v/i, "");
+      if (v) {
+        const badge = btn.closest(".proj")?.querySelector(".badge");
+        if (badge) badge.textContent = "v" + v;
+        btn.setAttribute("aria-label", `${LINKS.download} — الإصدار ${v}`);
+      }
+    } catch {
+      btn.target = "_blank";
+      btn.rel = "noopener";
+    }
+  });
+
   /* ---------- الواجهة: الاسم ثم التوقيع ---------- */
   requestAnimationFrame(() => requestAnimationFrame(() => {
     root.classList.add("ready");
@@ -140,7 +168,7 @@
   const secObs = new IntersectionObserver((es) => es.forEach((e) => {
     if (e.isIntersecting) navLinks.forEach((a) => a.classList.toggle("on", a.getAttribute("href") === "#" + e.target.id));
   }), { rootMargin: "-45% 0px -50% 0px" });
-  ["work", "about", "contact"].forEach((id) => { const s = document.getElementById(id); if (s) secObs.observe(s); });
+  ["work", "about"].forEach((id) => { const s = document.getElementById(id); if (s) secObs.observe(s); });
 
   /* ---------- ظهور الأقسام ---------- */
   const rvObserver = new IntersectionObserver((entries) => {
