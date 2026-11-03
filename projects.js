@@ -21,8 +21,10 @@
    tech         التقنيات المستخدمة
    links        download (رابط التحميل) | page (صفحة المشروع)
                 | code (المستودع) | live (رابط التجربة)
-   release      (اختياري) يجعل زر التحميل يجلب آخر إصدار من GitHub
-                تلقائيًا: { repo: "المالك/المستودع", asset: "جزء من اسم الملف" }
+   release      (اختياري) يجعل أزرار التحميل تجلب آخر إصدار من GitHub
+                تلقائيًا: { repo: "المالك/المستودع",
+                             asset: "جزء من اسم ملف التثبيت",
+                             portable: "جزء من اسم النسخة المحمولة" }
    ========================================================= */
 
 window.PROJECTS = [
@@ -57,8 +59,9 @@ window.PROJECTS = [
     ],
     tech: ["C#", "WPF", "PDFium", "Tesseract OCR", "qpdf"],
     links: {
-      download: "https://github.com/SaadAlzare/safahat-releases/releases/latest"
+      download: "https://github.com/SaadAlzare/safahat-releases/releases/latest",
+      portable: "https://github.com/SaadAlzare/safahat-releases/releases/latest"
     },
-    release: { repo: "SaadAlzare/safahat-releases", asset: "Setup.exe" }
+    release: { repo: "SaadAlzare/safahat-releases", asset: "Setup.exe", portable: "portable.zip" }
   }
 ];
