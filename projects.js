@@ -21,6 +21,8 @@
    tech         التقنيات المستخدمة
    links        download (رابط التحميل) | page (صفحة المشروع)
                 | code (المستودع) | live (رابط التجربة)
+   release      (اختياري) يجعل زر التحميل يجلب آخر إصدار من GitHub
+                تلقائيًا: { repo: "المالك/المستودع", asset: "جزء من اسم الملف" }
    ========================================================= */
 
 window.PROJECTS = [
@@ -30,9 +32,9 @@ window.PROJECTS = [
     type: "desktop",
     year: 2026,
     version: "3.3.2",
-    tagline: "أدوات PDF اليومية، بواجهة عربية هادئة.",
+    tagline: "كل ما تحتاجه مع ملفات PDF، في برنامج عربي واحد.",
     description:
-      "ادمج ملفاتك، قسّم الصفحات، غيّر ترتيبها، وحوّل بين PDF و Word و Excel و PowerPoint والصور. كل المعالجة على جهازك دون إنترنت، وتُحفظ النتائج في المكان الذي تختاره، مع معاينة واضحة لكل صفحة.",
+      "صفَحات برنامج مجاني لويندوز يدمج ملفات PDF ويقسّمها ويرتّب صفحاتها ويضغطها، ويحوّلها إلى Word و Excel و PowerPoint والصور وبالعكس. يعمل كله على جهازك دون إنترنت، فتبقى ملفاتك عندك.",
     icon: "assets/projects/safahat-mark.svg",
     accent: "#1668E8",
     images: [
@@ -56,6 +58,7 @@ window.PROJECTS = [
     tech: ["C#", "WPF", "PDFium", "Tesseract OCR", "qpdf"],
     links: {
       download: "https://github.com/SaadAlzare/safahat-releases/releases/latest"
-    }
+    },
+    release: { repo: "SaadAlzare/safahat-releases", asset: "Setup.exe" }
   }
 ];
