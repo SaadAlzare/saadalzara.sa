@@ -364,7 +364,7 @@ button, input { font: inherit; color: inherit; }
 @media (max-width: 640px) {
   :root { --rail: 84px; }
   .stage { height: calc(50svh - var(--rail) / 2); padding-top: 24px; }
-  .sig-hero { width: 112vw; margin-inline: -6vw; }
+  .sig-hero { width: 100%; }
   .rail-in { grid-template-columns: auto minmax(0, 1fr) auto; column-gap: 12px; }
   .rail-title { font-size: 1.75rem; flex-direction: column; align-items: flex-start; gap: 6px; line-height: 1.05; }
   .rail-title span { font-size: 1.25rem; }
@@ -383,7 +383,6 @@ button, input { font: inherit; color: inherit; }
   .proj-links { flex-direction: column; }
   .proj-links .btn { width: 100%; min-height: 54px; }
   .proj-detail { grid-template-columns: minmax(0, 1fr); gap: 28px; justify-items: start; }
-  .crop-ui.side-ui { width: 100%; max-width: 380px; height: 470px; }
   .proj-icon { width: 58px; height: 58px; padding: 8px; }
   .tools-grid { grid-template-columns: 1fr; gap: 24px; }
   .desk-wrap { order: -1; position: sticky; top: calc(var(--rail-now, 64px) + 4px); z-index: 5; background: var(--bg); padding-bottom: 8px; }
@@ -554,4 +553,7 @@ button, input { font: inherit; color: inherit; }
 /* اللقطات المقرّبة بمقاسها الحقيقي */
 .crop-ui { flex: none; }
 .crop-ui.side-ui { position: relative; width: 380px; height: 560px; overflow: hidden; border-radius: 14px; }
+@media (max-width: 640px) {
+  .crop-ui.side-ui { width: 100%; max-width: 380px; height: 470px; }
+}
 .crop-ui.side-ui [data-ui].sw-window { position: absolute; top: 0; right: 0; transform: none; }
