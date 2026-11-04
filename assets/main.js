@@ -2,11 +2,11 @@
 (() => {
   const root = document.documentElement;
   const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const fine = matchMedia("(hover: hover) and (pointer: fine)").matches;
   const projects = Array.isArray(window.PROJECTS) ? window.PROJECTS : [];
   const $ = (s, el = document) => el.querySelector(s);
+  const $$ = (s, el = document) => [...el.querySelectorAll(s)];
 
-  const TYPES = { web: "تطبيق ويب", mobile: "تطبيق جوال", desktop: "برنامج سطح مكتب", tool: "أداة" };
+  const TYPES = { web: "تطبيق ويب", mobile: "تطبيق جوال", desktop: "برنامج سطح مكتب لويندوز", tool: "أداة" };
   const LINKS = { download: "تحميل مجاني", portable: "النسخة المحمولة", page: "صفحة البرنامج", live: "جرّبه", code: "الكود المصدري" };
   const ar = (n) => String(n).replace(/\d/g, (d) => "٠١٢٣٤٥٦٧٨٩"[d]);
   const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -15,109 +15,92 @@
   const ICON_MOON = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>';
 
   /* ---------- البرامج ---------- */
+  const UI = window.SafahatUI;
   const list = $("#projects");
   if (list) {
     list.innerHTML = projects.map((p, n) => {
       const imgs = p.images || [];
       const links = Object.entries(p.links || {}).filter(([, u]) => u);
-      const meta = [TYPES[p.type] || p.type, p.year && ar(p.year)].filter(Boolean);
+      const meta = [p.version && `الإصدار ${p.version}`, TYPES[p.type] || p.type, p.year && ar(p.year)].filter(Boolean);
+      const live = p.ui && UI;
+      const themes = live ? [["light", "فاتح"], ["dark", "داكن"]] : imgs.map((im, i) => [String(i), im.label || ar(i + 1)]);
       return `
-      <article class="proj" style="--accent:${esc(p.accent || "#0784f2")}" aria-labelledby="p${n}">
-        <div class="proj-grid">
-          <div class="proj-info" data-rv>
-            <div class="proj-id">
-              ${p.icon ? `<img class="proj-icon" src="${esc(p.icon)}" alt="" width="72" height="72">` : ""}
-              <div>
-                <h3 class="proj-name" id="p${n}">${esc(p.name)}</h3>
-                <p class="proj-meta">${p.version ? `<span class="badge" dir="ltr">v${esc(p.version)}</span>` : ""}${meta.map((m) => `<span>${esc(m)}</span>`).join("")}${p.latin ? `<span dir="ltr">${esc(p.latin)}</span>` : ""}</p>
-              </div>
+      <article class="proj" aria-labelledby="p${n}">
+        <div class="proj-top" data-rv>
+          <div class="proj-id">
+            ${p.icon ? `<img class="proj-icon" src="${esc(p.icon)}" alt="" width="64" height="64">` : ""}
+            <div>
+              <h3 class="proj-name" id="p${n}">${esc(p.name)}</h3>
+              <p class="proj-meta">${meta.map((m, i) => `<span${i === 0 ? ' class="ver"' : ""}>${esc(m)}</span>`).join("")}</p>
             </div>
+          </div>
+          ${links.length ? `<div class="proj-links">${links.map(([k, u], i) =>
+            `<a class="btn ${i === 0 ? "" : "btn-quiet"}" href="${esc(u)}" ${(k === "download" || k === "portable") && p.release ? `data-release="${n}" data-kind="${k}"` : /^https?:/.test(u) ? 'target="_blank" rel="noopener"' : ""}>${k === "download" || k === "portable" ? ICON_DL : ""}${LINKS[k] || esc(k)}</a>`).join("")}</div>` : ""}
+        </div>
+        <figure class="shot" data-rv>
+          ${live ? `<div class="shot-fit" data-live="${n}"></div>` : `<div class="screens">${imgs.map((im, i) => `<img class="${i === 0 ? "on" : ""}" src="${esc(im.src)}" alt="لقطة من ${esc(p.name)}" width="1000" height="640" decoding="async">`).join("")}</div>`}
+          <div class="shot-bar">
+            ${themes.length > 1 ? `
+            <div class="switch" role="group" aria-label="مظهر الواجهة">
+              ${themes.map(([v, l], i) => `<button type="button" data-shot="${v}" aria-pressed="${i === 0}">${/داكن/.test(l) ? ICON_MOON : /فاتح/.test(l) ? ICON_SUN : ""}${esc(l)}</button>`).join("")}
+            </div>` : ""}
+            ${live ? `<figcaption class="shot-cap">واجهة ${esc(p.name)} كما هي في البرنامج. الأدوات في الشريط الجانبي تعمل.</figcaption>` : ""}
+          </div>
+        </figure>
+        <div class="proj-body" data-rv>
+          <div>
             ${p.tagline ? `<p class="proj-tag">${esc(p.tagline)}</p>` : ""}
             ${p.description ? `<p class="proj-desc">${esc(p.description)}</p>` : ""}
-            ${p.stats?.length ? `<dl class="stats">${p.stats.map(([k, v]) => `<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join("")}</dl>` : ""}
-            ${links.length ? `<div class="proj-links">${links.map(([k, u]) =>
-              `<a class="btn ${k === "download" ? "" : "btn-ghost"}" href="${esc(u)}" ${(k === "download" || k === "portable") && p.release ? `data-release="${n}" data-kind="${k}"` : /^https?:/.test(u) ? 'target="_blank" rel="noopener"' : ""}>${k === "download" || k === "portable" ? ICON_DL : ""}${LINKS[k] || esc(k)}</a>`).join("")}</div>` : ""}
           </div>
-          ${imgs.length ? `
-          <div class="shot-wrap" data-rv>
-            <div class="window">
-              <div class="window-bar" aria-hidden="true"><i></i><i></i><i></i><b>${esc(p.latin || p.name)}</b></div>
-              <div class="screens">
-                ${imgs.map((im, i) => `<img class="${i === 0 ? "on" : ""}" src="${esc(im.src)}" alt="لقطة من ${esc(p.name)}${im.label ? ` — المظهر ${esc(im.label)}` : ""}" width="1346" height="862" ${i ? 'loading="lazy"' : ""} decoding="async">`).join("")}
-              </div>
-            </div>
-            ${imgs.length > 1 ? `
-            <div class="switch" role="group" aria-label="بدّل لقطة الشاشة">
-              <span class="pill" aria-hidden="true"></span>
-              ${imgs.map((im, i) => `<button type="button" data-shot="${i}" aria-pressed="${i === 0}">${/داكن/.test(im.label) ? ICON_MOON : /فاتح/.test(im.label) ? ICON_SUN : ""}${esc(im.label || ar(i + 1))}</button>`).join("")}
-            </div>` : ""}
-          </div>` : ""}
+          ${p.stats?.length ? `<dl class="stats">${p.stats.map(([k, v]) => `<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join("")}</dl>` : ""}
         </div>
-        ${p.tools?.length ? `
-        <div class="tools" data-rv>
-          <div class="tools-head">
-            <h4>ماذا يفعل ${esc(p.name)}؟</h4>
-            <p>${ar(p.tools.reduce((s, g) => s + g.items.length, 0))} أداة في مساحة عمل واحدة</p>
+        ${live && p.detailTitle ? `
+        <div class="proj-detail" data-rv>
+          <div class="crop-ui side-ui" data-side="${n}"></div>
+          <div class="detail-text">
+            <h4>${esc(p.detailTitle)}</h4>
+            ${p.detailText ? `<p>${esc(p.detailText)}</p>` : ""}
+            ${p.tech?.length ? `<p class="tech">${p.tech.map((t) => `<span>${esc(t)}</span>`).join("")}</p>` : ""}
           </div>
-          <div class="tool-groups">
-            ${p.tools.map((g) => `<div class="tg"><h5>${esc(g.group)}</h5><ul>${g.items.map(([t, c]) => `<li class="tool" style="--c:${esc(c)}">${esc(t)}</li>`).join("")}</ul></div>`).join("")}
-          </div>
-          ${p.tech?.length ? `<p class="tech">${p.tech.map((t) => `<span>${esc(t)}</span>`).join("")}</p>` : ""}
+          <div class="crop-ui panel-ui" data-panel="${n}"></div>
         </div>` : ""}
       </article>`;
     }).join("");
 
-    // مبدّل لقطات الشاشة
-    list.querySelectorAll(".shot-wrap").forEach((wrap) => {
-      const sw = $(".switch", wrap);
-      const imgs = [...wrap.querySelectorAll(".screens img")];
-      if (sw) {
-        const pill = $(".pill", sw);
-        const btns = [...sw.querySelectorAll("button")];
-        const place = (b) => {
-          pill.style.width = b.offsetWidth + "px";
-          pill.style.insetInlineStart = (sw.offsetWidth - b.offsetLeft - b.offsetWidth) + "px";
-        };
-        const pick = (i) => {
-          btns.forEach((b, j) => b.setAttribute("aria-pressed", i === j));
-          imgs.forEach((im, j) => im.classList.toggle("on", i === j));
-          place(btns[i]);
-        };
-        btns.forEach((b, i) => b.addEventListener("click", () => { pick(i); clearInterval(auto); }));
-        const ready = () => place(btns.find((b) => b.getAttribute("aria-pressed") === "true"));
-        document.fonts?.ready.then(ready); ready(); addEventListener("resize", ready);
-        // تبديل تلقائي هادئ حتى يتفاعل الزائر
-        let k = 0, auto = 0;
-        if (!reduce && btns.length > 1) {
-          new IntersectionObserver((es, o) => {
-            if (!es[0].isIntersecting) return; o.disconnect();
-            auto = setInterval(() => { k = (k + 1) % btns.length; pick(k); }, 4200);
-          }, { threshold: 0.5 }).observe(wrap);
-        }
+    $$(".proj", list).forEach((art, n) => {
+      const sw = $(".switch", art);
+      const btns = sw ? $$("button", sw) : [];
+      const box = $("[data-live]", art);
+      let win = null, k = 0, auto = 0, stopped = false;
+      const mark = (i) => btns.forEach((b, j) => b.setAttribute("aria-pressed", i === j));
+      const pick = (i) => {
+        k = i; mark(i);
+        if (win) win.setTheme(btns[i].dataset.shot);
+        else $$(".screens img", art).forEach((im, j) => im.classList.toggle("on", i === j));
+      };
+      if (box) {
+        win = UI.window(box, { tool: "merge", theme: "light", onTheme: (th) => { k = th === "dark" ? 1 : 0; mark(k); } });
+        win.el.addEventListener("click", () => { stopped = true; clearInterval(auto); });
+        const s = $("[data-side]", art); if (s) UI.window(s, { tool: "word", theme: "dark", interactive: false, scale: false });
+        const pn = $("[data-panel]", art); if (pn) UI.panel(pn, { tool: "ppt", theme: "dark" });
       }
-      // ميلان خفيف مع المؤشر
-      const win = $(".window", wrap);
-      if (fine && !reduce && win) {
-        wrap.addEventListener("pointermove", (e) => {
-          const r = win.getBoundingClientRect();
-          const x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
-          win.style.setProperty("--ry", `${(x - 0.5) * 7}deg`);
-          win.style.setProperty("--rx", `${(0.5 - y) * 5}deg`);
-          win.style.setProperty("--gx", `${x * 100}%`);
-          win.style.setProperty("--gy", `${y * 100}%`);
-        });
-        wrap.addEventListener("pointerleave", () => { win.style.setProperty("--ry", "0deg"); win.style.setProperty("--rx", "0deg"); });
+      btns.forEach((b, i) => b.addEventListener("click", () => { stopped = true; clearInterval(auto); pick(i); }));
+      // يتبدل المظهر وحده ببطء، كالضوء يتغير في الغرفة، حتى يتفاعل الزائر
+      const run = () => { clearInterval(auto); if (!stopped && !document.hidden) auto = setInterval(() => pick((k + 1) % btns.length), 7000); };
+      if (!reduce && btns.length > 1) {
+        const fig = $(".shot", art);
+        new IntersectionObserver((es) => { es[0].isIntersecting ? run() : clearInterval(auto); }, { threshold: 0.4 }).observe(fig);
+        document.addEventListener("visibilitychange", () => (document.hidden ? clearInterval(auto) : run()));
       }
     });
   }
 
   /* ---------- أزرار التحميل: آخر إصدار من GitHub ---------- */
-  // يسأل GitHub عن آخر إصدار ويضع رابط الملف مباشرة في كل زر:
-  // ملف التثبيت لزر «تحميل مجاني»، والملف المضغوط لزر «النسخة المحمولة».
+  // يسأل GitHub عن آخر إصدار ويضع رابط الملف مباشرة في كل زر.
   // إن تعذّر ذلك تبقى الأزرار على صفحة آخر إصدار.
   projects.forEach(async (p, n) => {
     if (!p.release?.repo) return;
-    const btns = [...document.querySelectorAll(`[data-release="${n}"]`)];
+    const btns = $$(`[data-release="${n}"]`);
     if (!btns.length) return;
     const fallback = (b) => { b.target = "_blank"; b.rel = "noopener"; };
     try {
@@ -133,41 +116,37 @@
         if (!a) return fallback(b);
         b.href = a.browser_download_url;
         b.setAttribute("download", "");
-        if (v) b.setAttribute("aria-label", `${LINKS[b.dataset.kind]} — الإصدار ${v}`);
+        if (v) b.setAttribute("aria-label", `${LINKS[b.dataset.kind]}، الإصدار ${v}`);
       });
-      const badge = btns[0].closest(".proj")?.querySelector(".badge");
-      if (v && badge) badge.textContent = "v" + v;
+      const ver = btns[0].closest(".proj")?.querySelector(".ver");
+      if (v && ver) ver.textContent = "الإصدار " + v;
     } catch {
       btns.forEach(fallback);
     }
   });
 
-  /* ---------- الواجهة: الاسم ثم التوقيع ---------- */
+  /* ---------- الشاشة الأولى: التوقيع يُكتب ثم يظهر السطر ---------- */
   requestAnimationFrame(() => requestAnimationFrame(() => {
     root.classList.add("ready");
     $(".sig-hero")?.classList.add("drawn");
   }));
 
-  /* ---------- الشريط العلوي والتمرير ---------- */
-  const nav = $("#nav");
-  const heroSig = $(".sig-hero");
-  let lastY = scrollY, ticking = false;
+  /* ---------- السطر: يرسو في الأعلى ---------- */
+  const rail = $("#nav");
+  const stage = $(".stage");
+  const setRail = () => root.style.setProperty("--rail-now", (rail?.offsetHeight || 64) + "px");
   const onScroll = () => {
-    const y = scrollY;
-    nav?.classList.toggle("solid", y > 40);
-    nav?.classList.toggle("hide", y > innerHeight && y > lastY + 4);
-    if (y < lastY - 4) nav?.classList.remove("hide");
-    lastY = y;
-    if (heroSig && !reduce && y < innerHeight * 1.2) {
-      heroSig.style.transform = `translate3d(0, ${y * 0.18}px, 0) scale(${1 + y * 0.00012})`;
+    if (rail && stage) {
+      const docked = scrollY >= stage.offsetHeight - 2;
+      if (docked !== rail.classList.contains("docked")) { rail.classList.toggle("docked", docked); requestAnimationFrame(setRail); }
     }
-    ticking = false;
   };
-  addEventListener("scroll", () => { if (!ticking) { ticking = true; requestAnimationFrame(onScroll); } }, { passive: true });
-  onScroll();
+  addEventListener("scroll", onScroll, { passive: true });
+  addEventListener("resize", setRail);
+  onScroll(); setRail();
 
   // تمييز رابط القسم الحالي
-  const navLinks = [...document.querySelectorAll('.nav nav a[href^="#"]')];
+  const navLinks = $$('.rail-nav a[href^="#"]');
   const secObs = new IntersectionObserver((es) => es.forEach((e) => {
     if (e.isIntersecting) navLinks.forEach((a) => a.classList.toggle("on", a.getAttribute("href") === "#" + e.target.id));
   }), { rootMargin: "-45% 0px -50% 0px" });
@@ -180,27 +159,115 @@
       e.target.classList.add("in");
       rvObserver.unobserve(e.target);
     });
-  }, { rootMargin: "0px 0px -10% 0px" });
-  document.querySelectorAll("[data-rv]").forEach((el) => {
+  }, { rootMargin: "0px 0px -8% 0px" });
+  $$("[data-rv]").forEach((el) => {
     [...el.children].forEach((c, i) => c.style.setProperty("--i", i));
     rvObserver.observe(el);
   });
-  const footSig = $(".sig-foot");
-  if (footSig) {
-    new IntersectionObserver((es, o) => {
-      if (es[0].isIntersecting) { footSig.classList.add("drawn"); o.disconnect(); }
-    }, { threshold: 0.3 }).observe(footSig);
+
+  /* ---------- ماذا يفعل صفحات: الصفحات تتحرك ---------- */
+  // كل أداة حالتان (قبل وبعد) لأربع صفحات: [x%, y%, دوران, حجم, ظاهرة؟, الرقم, الوسم, مخرَج؟, ممزقة؟]
+  const FMT = ["Word", "Excel", "PowerPoint", "JPG"];
+  const fan = (cx, cy, i, s = 1) => [cx + (i - 1.5) * 6, cy + (i - 1.5) * 4, (i - 1.5) * 2.5, s];
+  const T = {
+    merge: {
+      cap: "دمج: ملفان من صفحتين يصيران ملفًا واحدًا من أربع صفحات.",
+      a: [0, 1, 2, 3].map((i) => [...(i < 2 ? [68 + (i - .5) * 6, 46 + (i - .5) * 4] : [32 + (i - 2.5) * 6, 46 + (i - 2.5) * 4]), (i % 2 ? 3 : -3), .9, 1, ar(i % 2 + 1), "PDF"]),
+      b: [0, 1, 2, 3].map((i) => [...fan(50, 50, 3 - i), 1, ar(i + 1), "PDF", true]),
+    },
+    split: {
+      cap: "تقسيم: ملف من أربع صفحات يصير ملفين، لكل نطاق ملفه.",
+      a: [0, 1, 2, 3].map((i) => [...fan(50, 50, 3 - i), 1, ar(i + 1), "PDF"]),
+      b: [0, 1, 2, 3].map((i) => [...(i < 2 ? [68 + (i - .5) * 6, 46 + (i - .5) * 4] : [32 + (i - 2.5) * 6, 46 + (i - 2.5) * 4]), (i % 2 ? 3 : -3), .9, 1, ar(i % 2 + 1), "PDF", true]),
+    },
+    order: {
+      cap: "ترتيب: الصفحات في مكانها الصحيح، من اليمين إلى اليسار.",
+      a: [[3, 0], [1, 1], [4, 2], [2, 3]].map(([n, slot]) => [80 - slot * 20, 50, 0, .55, 1, ar(n), "PDF"]),
+      b: [[3, 0], [1, 1], [4, 2], [2, 3]].map(([n]) => [80 - (n - 1) * 20, 50, 0, .55, 1, ar(n), "PDF", true]),
+    },
+    compress: {
+      cap: "ضغط: الصفحات نفسها، في ملف أخف للإرسال.",
+      a: [0, 1, 2, 3].map((i) => [...fan(50, 50, 3 - i, 1.25), 1, ar(i + 1), "PDF"]),
+      b: [0, 1, 2, 3].map((i) => [50 + (1.5 - i) * 3, 52 + (1.5 - i) * 2, 0, .62, 1, ar(i + 1), "PDF", true]),
+    },
+    from: {
+      cap: "من PDF: الملف يصير مستندًا تعدّله في Word أو Excel أو PowerPoint، أو صورًا.",
+      a: (f) => [[64, 50, -3, 1, 1, "", "PDF"], [64, 50, -3, 1, 0, "", f], [64, 50, 0, 1, 0, "", f], [64, 50, 0, 1, 0, "", f]],
+      b: (f) => [[64, 50, -3, 1, 1, "", "PDF"], [34, 50, 3, 1, 1, "", f, true], [64, 50, 0, 1, 0, "", f], [64, 50, 0, 1, 0, "", f]],
+    },
+    to: {
+      cap: "إلى PDF: مستند Word أو جدول Excel أو عرض PowerPoint أو صورة، في ملف PDF.",
+      a: (f) => [[64, 50, -3, 1, 1, "", f], [64, 50, -3, 1, 0, "", "PDF"], [64, 50, 0, 1, 0, "", "PDF"], [64, 50, 0, 1, 0, "", "PDF"]],
+      b: (f) => [[64, 50, -3, 1, 1, "", f], [34, 50, 3, 1, 1, "", "PDF", true], [64, 50, 0, 1, 0, "", "PDF"], [64, 50, 0, 1, 0, "", "PDF"]],
+    },
+    repair: {
+      cap: "إصلاح: الملف الذي لا يُفتح يعود سليمًا.",
+      a: [[50, 52, -7, 1.2, 1, "!", "PDF", false, true], [50, 50, 0, 1, 0, "", ""], [50, 50, 0, 1, 0, "", ""], [50, 50, 0, 1, 0, "", ""]],
+      b: [[50, 50, 0, 1.2, 1, ar(1), "PDF", true, false], [50, 50, 0, 1, 0, "", ""], [50, 50, 0, 1, 0, "", ""], [50, 50, 0, 1, 0, "", ""]],
+    },
+  };
+  const desk = $(".desk");
+  if (desk) {
+    const pages = $$(".pg", desk);
+    const cap = $(".desk-cap", desk);
+    const btns = $$(".names button");
+    let tool = "merge", phase = 0, round = 0, timer = 0;
+    const apply = (states) => states.forEach(([x, y, r, s, on, n, t, out, torn], i) => {
+      const pg = pages[i];
+      pg.style.setProperty("--x", x + "%"); pg.style.setProperty("--y", y + "%");
+      pg.style.setProperty("--r", r + "deg"); pg.style.setProperty("--s", s);
+      pg.style.opacity = on ? 1 : 0;
+      pg.style.zIndex = 10 - i;
+      pg.classList.toggle("out", !!out); pg.classList.toggle("torn", !!torn);
+      pg.querySelector(".pg-n").textContent = n;
+      const tag = pg.querySelector(".pg-t");
+      tag.textContent = t; tag.hidden = !t;
+    });
+    const show = () => {
+      const d = T[tool], f = FMT[round % FMT.length];
+      const st = phase ? d.b : d.a;
+      apply(typeof st === "function" ? st(f) : st);
+    };
+    const loop = () => {
+      clearTimeout(timer);
+      if (reduce) { phase = 1; show(); return; }
+      timer = setTimeout(() => { phase = 1 - phase; if (!phase) round++; show(); loop(); }, phase ? 1500 : 1900);
+    };
+    const TC = { merge: "merge", split: "split", order: "reorder", compress: "compress", from: "word", to: "wordpdf", repair: "repair" };
+    const stage = $(".desk-pages", desk);
+    const tint = () => { const t = window.SafahatUI?.TOOLS[TC[tool]]; if (t && stage) stage.style.setProperty("--tc", t.c[0]); };
+    const choose = (b) => {
+      tool = b.dataset.tool; phase = 0; round = 0; tint();
+      btns.forEach((x) => x.setAttribute("aria-pressed", x === b));
+      cap.textContent = T[tool].cap;
+      show(); loop();
+    };
+    btns.forEach((b) => {
+      b.addEventListener("click", () => choose(b));
+      b.addEventListener("mouseenter", () => { if (matchMedia("(hover: hover)").matches && b.dataset.tool !== tool) choose(b); });
+      b.addEventListener("focus", () => { if (b.dataset.tool !== tool) choose(b); });
+    });
+    tint(); show();
+    new IntersectionObserver((es) => (es[0].isIntersecting ? loop() : clearTimeout(timer))).observe(desk);
   }
 
   /* ---------- عدد البرامج ---------- */
   const countEl = $("[data-count]");
   if (countEl) {
     const n = projects.length;
-    countEl.textContent = n === 1 ? "برنامج واحد" : n === 2 ? "برنامجان" : n <= 10 ? `${ar(n)} برامج` : `${ar(n)} برنامجًا`;
+    countEl.textContent = n === 1 ? "برنامجًا واحدًا" : n === 2 ? "برنامجين" : n <= 10 ? `${ar(n)} برامج` : `${ar(n)} برنامجًا`;
   }
 
+  /* ---------- الرسالة: تفتح البريد برسالة جاهزة ---------- */
+  const form = $(".field");
+  form?.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const body = form.elements.body.value.trim();
+    location.href = `mailto:Saad.Alzaree@gmail.com?subject=${encodeURIComponent("رسالة من saadalzara.sa")}&body=${encodeURIComponent(body)}`;
+  });
+
   /* ---------- نسخ البريد ---------- */
-  document.querySelectorAll("[data-copy]").forEach((btn) => {
+  $$("[data-copy]").forEach((btn) => {
     btn.addEventListener("click", async () => {
       const text = btn.dataset.copy;
       try { await navigator.clipboard.writeText(text); }
@@ -208,7 +275,7 @@
         const t = Object.assign(document.createElement("textarea"), { value: text });
         document.body.append(t); t.select(); document.execCommand("copy"); t.remove();
       }
-      btn.textContent = "نُسخ ✓";
+      btn.textContent = "نُسخ";
       btn.classList.add("done");
       setTimeout(() => { btn.textContent = "انسخ"; btn.classList.remove("done"); }, 1800);
     });

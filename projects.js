@@ -18,6 +18,10 @@
                 واحدة يظهر زر للتبديل بينها
    stats        حقائق قصيرة: [["العنوان", "القيمة"], ...]
    tools        مجموعات الأدوات (اختياري): [{ group, items: [[الاسم, اللون]] }]
+   ui           (اختياري) true يعرض نسخة HTML حية من واجهة صفَحات (assets/app.js)
+                بدل لقطات الشاشة. البرامج الأخرى تكتفي بـ images
+   detailTitle  عنوان قصير بجانب تفاصيل الواجهة
+   detailText   فقرة بجانب تفاصيل الواجهة
    tech         التقنيات المستخدمة
    links        download (رابط التحميل) | page (صفحة المشروع)
                 | code (المستودع) | live (رابط التجربة)
@@ -39,6 +43,7 @@ window.PROJECTS = [
       "صفَحات برنامج مجاني لويندوز يدمج ملفات PDF ويقسّمها ويرتّب صفحاتها ويضغطها، ويحوّلها إلى Word و Excel و PowerPoint والصور وبالعكس. يعمل كله على جهازك دون إنترنت، فتبقى ملفاتك عندك.",
     icon: "assets/projects/safahat-mark.svg",
     accent: "#1668E8",
+    ui: true,
     images: [
       { src: "assets/projects/safahat-light.webp", label: "فاتح" },
       { src: "assets/projects/safahat-dark.webp", label: "داكن" }
@@ -57,6 +62,8 @@ window.PROJECTS = [
       { group: "الصور", items: [["PDF إلى صور", "#0E9AA7"], ["الصور إلى PDF", "#D2457F"]] },
       { group: "صيانة", items: [["ضغط", "#3A6FD8"], ["إصلاح الملفات التالفة", "#0AA5C8"]] }
     ],
+    detailTitle: "واجهة عربية من أول سطر",
+    detailText: "الأدوات مرتبة في مجموعات على جانب الشاشة، وكل أداة تفتح في مساحة العمل نفسها مع معاينة الملف وتحديد الصفحات، بالمظهر الفاتح أو الداكن.",
     tech: ["C#", "WPF", "PDFium", "Tesseract OCR", "qpdf"],
     links: {
       download: "https://github.com/SaadAlzare/safahat-releases/releases/latest",
