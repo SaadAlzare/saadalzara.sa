@@ -164,7 +164,7 @@
 
   /* ملاءمة النافذة لعرض الحاوية: تُرسم بمقاسها الحقيقي ثم تُصغَّر، فتبقى حادة */
   const fit = (box, el, w) => {
-    const go = () => { const k = box.clientWidth / w; el.style.transform = `scale(${k})`; box.style.height = el.offsetHeight * k + "px"; };
+    const go = () => { const k = Math.max(box.clientWidth / w, matchMedia("(max-width: 640px)").matches ? 0.6 : 0); el.style.transform = `scale(${k})`; box.style.height = el.offsetHeight * k + "px"; };
     go(); new ResizeObserver(go).observe(box);
     document.fonts?.ready.then(go);
   };

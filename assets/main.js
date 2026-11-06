@@ -6,9 +6,9 @@
   const $ = (s, el = document) => el.querySelector(s);
   const $$ = (s, el = document) => [...el.querySelectorAll(s)];
 
-  const TYPES = { web: "تطبيق ويب", mobile: "تطبيق جوال", desktop: "برنامج سطح مكتب لويندوز", tool: "أداة" };
+  const TYPES = { web: "تطبيق ويب", mobile: "تطبيق جوال", desktop: "برنامج لويندوز", tool: "أداة" };
   const LINKS = { download: "تحميل مجاني", portable: "النسخة المحمولة", page: "صفحة البرنامج", live: "جرّبه", code: "الكود المصدري" };
-  const ar = (n) => String(n).replace(/\d/g, (d) => "٠١٢٣٤٥٦٧٨٩"[d]);
+  const ar = (n) => String(n); // الأرقام بالصيغة الغربية في الموقع كله
   const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const ICON_DL = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m0 0-4.5-4.5M12 15l4.5-4.5M5 19h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
   const ICON_SUN = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 2.5v2m0 15v2m9.5-9.5h-2m-15 0h-2m15.2-6.7-1.4 1.4M6.7 17.3l-1.4 1.4m0-13.4 1.4 1.4m10.6 10.6 1.4 1.4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
@@ -44,26 +44,17 @@
             <div class="switch" role="group" aria-label="مظهر الواجهة">
               ${themes.map(([v, l], i) => `<button type="button" data-shot="${v}" aria-pressed="${i === 0}">${/داكن/.test(l) ? ICON_MOON : /فاتح/.test(l) ? ICON_SUN : ""}${esc(l)}</button>`).join("")}
             </div>` : ""}
-            ${live ? `<figcaption class="shot-cap">واجهة ${esc(p.name)} كما هي في البرنامج. الأدوات في الشريط الجانبي تعمل.</figcaption>` : ""}
+            ${live ? `<figcaption class="shot-cap">جرّب الأدوات من الشريط الجانبي.<span class="swipe-hint"> اسحب الواجهة لرؤيتها كاملة.</span></figcaption>` : ""}
           </div>
         </figure>
         <div class="proj-body" data-rv>
           <div>
             ${p.tagline ? `<p class="proj-tag">${esc(p.tagline)}</p>` : ""}
             ${p.description ? `<p class="proj-desc">${esc(p.description)}</p>` : ""}
+            ${p.tech?.length ? `<p class="tech">${p.tech.map((t) => `<span>${esc(t)}</span>`).join("")}</p>` : ""}
           </div>
           ${p.stats?.length ? `<dl class="stats">${p.stats.map(([k, v]) => `<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join("")}</dl>` : ""}
         </div>
-        ${live && p.detailTitle ? `
-        <div class="proj-detail" data-rv>
-          <div class="crop-ui side-ui" data-side="${n}"></div>
-          <div class="detail-text">
-            <h4>${esc(p.detailTitle)}</h4>
-            ${p.detailText ? `<p>${esc(p.detailText)}</p>` : ""}
-            ${p.tech?.length ? `<p class="tech">${p.tech.map((t) => `<span>${esc(t)}</span>`).join("")}</p>` : ""}
-          </div>
-          <div class="crop-ui panel-ui" data-panel="${n}"></div>
-        </div>` : ""}
       </article>`;
     }).join("");
 
@@ -81,8 +72,6 @@
       if (box) {
         win = UI.window(box, { tool: "merge", theme: "light", onTheme: (th) => { k = th === "dark" ? 1 : 0; mark(k); } });
         win.el.addEventListener("click", () => { stopped = true; clearInterval(auto); });
-        const s = $("[data-side]", art); if (s) UI.window(s, { tool: "word", theme: "dark", interactive: false, scale: false });
-        const pn = $("[data-panel]", art); if (pn) UI.panel(pn, { tool: "ppt", theme: "dark" });
       }
       btns.forEach((b, i) => b.addEventListener("click", () => { stopped = true; clearInterval(auto); pick(i); }));
       // يتبدل المظهر وحده ببطء، كالضوء يتغير في الغرفة، حتى يتفاعل الزائر
@@ -249,13 +238,6 @@
     });
     tint(); show();
     new IntersectionObserver((es) => (es[0].isIntersecting ? loop() : clearTimeout(timer))).observe(desk);
-  }
-
-  /* ---------- عدد البرامج ---------- */
-  const countEl = $("[data-count]");
-  if (countEl) {
-    const n = projects.length;
-    countEl.textContent = n === 1 ? "برنامجًا واحدًا" : n === 2 ? "برنامجين" : n <= 10 ? `${ar(n)} برامج` : `${ar(n)} برنامجًا`;
   }
 
   /* ---------- الرسالة: تفتح البريد برسالة جاهزة ---------- */

@@ -190,15 +190,10 @@ button, input { font: inherit; color: inherit; }
 .switch button[aria-pressed="true"], .switch button[aria-pressed="true"]:hover { color: var(--bg); background: var(--ink); }
 .switch button { transition: color .25s, background-color .35s; }
 
-/* تفاصيل الواجهة */
-.proj-detail {
-  display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: clamp(28px, 4vw, 72px);
-  align-items: end; margin-top: clamp(96px, 10vw, 160px);
-}
-.detail-text { align-self: center; max-width: 48ch; }
-.detail-text h4 { margin: 0 0 12px; font-size: var(--t-m); font-weight: 400; line-height: 1.4; }
-.detail-text p { margin-bottom: 18px; }
-.tech { display: flex; flex-wrap: wrap; gap: 4px 18px; font-size: var(--t-s); color: var(--muted); direction: ltr; justify-content: flex-end; }
+/* التقنيات: سطر صغير تحت الوصف */
+.tech { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 24px; font-size: 0.8125rem; color: var(--muted); direction: ltr; justify-content: flex-end; }
+.tech span { padding: 4px 12px; border-radius: 999px; border: 1px solid var(--surface-2); letter-spacing: .01em; }
+.swipe-hint { display: none; }
 .noscript { color: var(--muted); }
 
 /* ---------- ماذا يفعل صفحات: الفهرس الحي ---------- */
@@ -352,8 +347,6 @@ button, input { font: inherit; color: inherit; }
   .rail-line { display: none; }
   .rail-in { grid-template-columns: auto minmax(0, 1fr) auto; }
   .proj-body { grid-template-columns: 1fr; }
-  .proj-detail { grid-template-columns: auto minmax(0, 1fr); }
-  .panel-ui { display: none; }
   .tools-grid { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); }
   .panel { grid-template-columns: 1fr; min-height: 0; padding-bottom: 46vw; gap: 64px; }
   .about-text { justify-self: start; max-width: 520px; gap: 40px; }
@@ -382,7 +375,10 @@ button, input { font: inherit; color: inherit; }
   .work { padding-top: 72px; }
   .proj-links { flex-direction: column; }
   .proj-links .btn { width: 100%; min-height: 54px; }
-  .proj-detail { grid-template-columns: minmax(0, 1fr); gap: 28px; justify-items: start; }
+  .shot-fit { overflow-x: auto; overscroll-behavior-x: contain; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+  .shot-fit::-webkit-scrollbar { display: none; }
+  .swipe-hint { display: inline; }
+  .proj-body { margin-top: 40px; }
   .proj-icon { width: 58px; height: 58px; padding: 8px; }
   .tools-grid { grid-template-columns: 1fr; gap: 24px; }
   .desk-wrap { order: -1; position: sticky; top: calc(var(--rail-now, 64px) + 4px); z-index: 5; background: var(--bg); padding-bottom: 8px; }
@@ -394,12 +390,12 @@ button, input { font: inherit; color: inherit; }
   .names b { font-size: 9.5vw; color: var(--ink); }
   .names small { flex-basis: 100%; }
   .about { padding-inline: 10px; }
-  .panel { padding: 40px 20px 92vw; gap: 56px; }
+  .panel { padding: 40px 20px 72vw; gap: 48px; }
   .about-text { gap: 40px; }
   .about-h { font-size: 8.5vw; }
   .about-sig { width: 130%; inset-inline-start: -15%; bottom: -4%; }
   .reach > div { grid-template-columns: 1fr; gap: 4px; }
-  .foot { grid-template-columns: 1fr; gap: 8px; padding: 20svh 20px 24px; }
+  .foot { grid-template-columns: 1fr; gap: 14px; padding: 48px 20px 28px; border-top: 1px solid var(--surface-2); }
   .foot-yr { justify-self: start; }
 }
 
@@ -550,10 +546,3 @@ button, input { font: inherit; color: inherit; }
 [data-ui] .sw-th i { display: grid; place-items: center; width: 16px; height: 16px; border-radius: 4px; background: var(--tc); color: #fff; }
 [data-ui] .sw-th i .sw-i { width: 11px; height: 11px; stroke-width: 3; }
 
-/* اللقطات المقرّبة بمقاسها الحقيقي */
-.crop-ui { flex: none; }
-.crop-ui.side-ui { position: relative; width: 380px; height: 560px; overflow: hidden; border-radius: 14px; }
-@media (max-width: 640px) {
-  .crop-ui.side-ui { width: 100%; max-width: 380px; height: 470px; }
-}
-.crop-ui.side-ui [data-ui].sw-window { position: absolute; top: 0; right: 0; transform: none; }
